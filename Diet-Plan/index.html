@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#1a7a4c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="manifest" href="manifest.json">
+<title>Priyank's Diet Plan</title>
+<style>
+:root {
+  --primary: #1a7a4c;
+  --primary-light: #e8f5ee;
+  --primary-dark: #0d5c37;
+  --danger: #d32f2f;
+  --danger-light: #fdecea;
+  --warning: #f57c00;
+  --warning-light: #fff3e0;
+  --info: #1565c0;
+  --info-light: #e3f2fd;
+  --surface: #ffffff;
+  --bg: #f5f7f5;
+  --text: #1a1a1a;
+  --text-secondary: #5f6368;
+  --border: #e0e0e0;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+  --radius: 12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  padding-bottom: 80px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 20px 16px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+.header h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.header-sub {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+.tab-bar {
+  display: flex;
+  gap: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 72px;
+  z-index: 99;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab-bar::-webkit-scrollbar { display: none; }
+
+.tab {
+  flex: 1;
+  min-width: fit-content;
+  padding: 12px 14px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  font-weight: 600;
+}
+
+.content { padding: 16px; max-width: 600px; margin: 0 auto; }
+
+.section { display: none; }
+.section.active { display: block; }
+
+.card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.badge-danger { background: var(--danger-light); color: var(--danger); }
+.badge-warning { background: var(--warning-light); color: var(--warning); }
+.badge-info { background: var(--info-light); color: var(--info); }
+.badge-success { background: var(--primary-light); color: var(--primary); }
+
+.meal-time {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meal-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.meal-item:last-child { border-bottom: none; }
+
+.meal-name { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+.meal-desc { font-size: 13px; color: var(--text-secondary); }
+.meal-nutrients { font-size: 11px; color: var(--primary); margin-top: 3px; font-weight: 500; }
+
+.week-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.week-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 2px solid var(--primary);
+  background: transparent;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.week-btn.active {
+  background: var(--primary);
+  color: white;
+}
+
+.day-selector {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.day-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.day-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.store-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+  margin-right: 4px;
+  margin-bottom: 4px;
+}
+
+.store-costco { background: #e3f2fd; color: #1565c0; }
+.store-patel { background: #fff3e0; color: #e65100; }
+.store-tj { background: #fce4ec; color: #c62828; }
+.store-kroger { background: #e8f5e9; color: #2e7d32; }
+
+.grocery-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.grocery-item:last-child { border-bottom: none; }
+
+.grocery-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.2s;
+}
+
+.grocery-check.checked {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.grocery-check.checked::after {
+  content: '✓';
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.grocery-text { flex: 1; }
+.grocery-name { font-size: 14px; font-weight: 500; }
+.grocery-detail { font-size: 12px; color: var(--text-secondary); }
+.grocery-name.checked-text { text-decoration: line-through; color: var(--text-secondary); }
+
+.avoid-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.avoid-icon { font-size: 18px; flex-shrink: 0; }
+.avoid-name { font-weight: 600; font-size: 14px; }
+.avoid-reason { font-size: 12px; color: var(--text-secondary); }
+
+.health-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.health-metric {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.health-metric .value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.health-metric .label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.health-metric .status {
+  font-size: 10px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.status-high { color: var(--danger); }
+.status-low { color: var(--warning); }
+.status-ok { color: var(--primary); }
+
+.daily-macros {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.macro-pill {
+  flex: 1;
+  text-align: center;
+  padding: 10px 6px;
+  background: var(--surface);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.macro-pill .num { font-size: 18px; font-weight: 700; color: var(--primary-dark); }
+.macro-pill .unit { font-size: 10px; color: var(--text-secondary); display: block; }
+
+.tip-box {
+  background: var(--info-light);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 12px;
+  border-left: 4px solid var(--info);
+  font-size: 13px;
+}
+
+.tip-box strong { color: var(--info); }
+
+.week-grocery-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.store-filter {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.filter-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.supplement-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.supplement-card:last-child { border-bottom: none; }
+
+.supp-icon { font-size: 28px; }
+.supp-name { font-weight: 600; font-size: 14px; }
+.supp-dose { font-size: 12px; color: var(--text-secondary); }
+.supp-note { font-size: 11px; color: var(--warning); font-weight: 500; }
+
+.nav-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-item {
+  flex: 1;
+  padding: 8px 4px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 10px;
+  transition: color 0.2s;
+}
+
+.nav-item.active { color: var(--primary); }
+
+.nav-item svg {
+  display: block;
+  margin: 0 auto 2px;
+  width: 24px;
+  height: 24px;
+}
+
+.collapsible-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.collapsible-header .arrow {
+  transition: transform 0.2s;
+  font-size: 14px;
+}
+
+.collapsible-header.open .arrow { transform: rotate(180deg); }
+
+.collapsible-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.collapsible-body.open { max-height: 2000px; }
+
+.search-box {
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 14px;
+  margin-bottom: 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-box:focus { border-color: var(--primary); }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #1e1e1e;
+    --bg: #121212;
+    --text: #e0e0e0;
+    --text-secondary: #9e9e9e;
+    --border: #333;
+    --shadow: 0 2px 8px rgba(0,0,0,0.3);
+    --primary-light: #1a3a2a;
+    --danger-light: #3a1a1a;
+    --warning-light: #3a2a1a;
+    --info-light: #1a2a3a;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Priyank's Diet Plan</h1>
+  <div class="header-sub">Cholesterol Control + Muscle Building | March-April 2026</div>
+</div>
+
+<div class="tab-bar" id="tabBar">
+  <div class="tab active" data-tab="dashboard">Dashboard</div>
+  <div class="tab" data-tab="meals">Meal Plan</div>
+  <div class="tab" data-tab="grocery">Grocery</div>
+  <div class="tab" data-tab="avoid">Avoid</div>
+  <div class="tab" data-tab="supps">Supplements</div>
+</div>
+
+<div class="content">
+
+<!-- DASHBOARD -->
+<div class="section active" id="dashboard">
+  <h3 style="margin-bottom:12px;font-size:15px;color:var(--text-secondary)">Your Blood Work (03/19/2026)</h3>
+  <div class="health-summary">
+    <div class="health-metric">
+      <div class="value" style="color:var(--danger)">223</div>
+      <div class="label">Total Cholesterol</div>
+      <div class="status status-high">HIGH (≤200)</div>
+    </div>
+    <div class="health-metric">
+      <div class="value" style="color:var(--danger)">152</div>
+      <div class="label">Direct LDL</div>
+      <div class="status status-high">HIGH (≤100)</div>
+    </div>
+    <div class="health-metric">
+      <div class="value" style="color:var(--warning)">38</div>
+      <div class="label">HDL (Good)</div>
+      <div class="status status-low">LOW (>60)</div>
+    </div>
+    <div class="health-metric">
+      <div class="value" style="color:var(--danger)">153</div>
+      <div class="label">Triglycerides</div>
+      <div class="status status-high">HIGH (≤150)</div>
+    </div>
+    <div class="health-metric">
+      <div class="value" style="color:var(--warning)">19.1</div>
+      <div class="label">Vitamin D</div>
+      <div class="status status-low">LOW (30-100)</div>
+    </div>
+    <div class="health-metric">
+      <div class="value" style="color:var(--warning)">13.0</div>
+      <div class="label">Hemoglobin</div>
+      <div class="status status-low">LOW (13.5-18)</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" style="margin-bottom:10px">Daily Nutrition Targets</div>
+    <div class="daily-macros">
+      <div class="macro-pill">
+        <div class="num">~2200</div>
+        <span class="unit">CALORIES</span>
+      </div>
+      <div class="macro-pill">
+        <div class="num">120g</div>
+        <span class="unit">PROTEIN</span>
+      </div>
+      <div class="macro-pill">
+        <div class="num">65g</div>
+        <span class="unit">FAT</span>
+      </div>
+      <div class="macro-pill">
+        <div class="num">280g</div>
+        <span class="unit">CARBS</span>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--text-secondary)">
+      High protein for muscle building. Fats kept moderate with emphasis on unsaturated. Fiber target: 35g+ daily for LDL reduction.
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <strong>Key Strategy:</strong> Soluble fiber (oats, psyllium, beans) lowers LDL by 5-10%. Omega-3s (flax, chia, walnuts) raise HDL and lower triglycerides. Your current chia seed habit is excellent — keep it up.
+  </div>
+
+  <div class="tip-box">
+    <strong>Vitamin D Note:</strong> At 19.1 ng/mL, 2000 IU may not be enough. Ask your doctor about increasing to 4000-5000 IU D3 daily with a fat-containing meal for better absorption.
+  </div>
+
+  <div class="tip-box">
+    <strong>Iron Tip:</strong> Take your iron supplement with vitamin C (lemon water or orange juice) on an empty stomach. Avoid taking with tea, coffee, or calcium within 2 hours.
+  </div>
+</div>
+
+<!-- MEAL PLAN -->
+<div class="section" id="meals">
+  <div class="week-selector" id="weekSelector"></div>
+  <div class="day-selector" id="daySelector"></div>
+  <div id="mealContent"></div>
+</div>
+
+<!-- GROCERY -->
+<div class="section" id="grocery">
+  <div class="week-selector" id="groceryWeekSelector"></div>
+  <div class="store-filter" id="storeFilter">
+    <div class="filter-btn active" data-store="all">All Stores</div>
+    <div class="filter-btn" data-store="costco">Costco</div>
+    <div class="filter-btn" data-store="patel">Patel Bros</div>
+    <div class="filter-btn" data-store="tj">Trader Joe's</div>
+    <div class="filter-btn" data-store="kroger">Kroger</div>
+  </div>
+  <input type="text" class="search-box" id="grocerySearch" placeholder="Search grocery items...">
+  <div id="groceryContent"></div>
+</div>
+
+<!-- AVOID -->
+<div class="section" id="avoid">
+  <input type="text" class="search-box" id="avoidSearch" placeholder="Search foods to avoid...">
+  <div id="avoidContent"></div>
+</div>
+
+<!-- SUPPLEMENTS -->
+<div class="section" id="supps">
+  <div id="suppsContent"></div>
+</div>
+
+</div><!-- end content -->
+
+<nav class="nav-bottom">
+  <div class="nav-item active" data-tab="dashboard">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1"/></svg>
+    Home
+  </div>
+  <div class="nav-item" data-tab="meals">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    Meals
+  </div>
+  <div class="nav-item" data-tab="grocery">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+    Grocery
+  </div>
+  <div class="nav-item" data-tab="avoid">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M4.93 4.93l14.14 14.14"/></svg>
+    Avoid
+  </div>
+  <div class="nav-item" data-tab="supps">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    Supps
+  </div>
+</nav>
+
+<script>
+// ============ DATA ============
+
+const MEAL_DATA = {
+  week1: {
+    name: "Week 1 — Foundation",
+    days: {
+      Mon: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia Seeds", desc: "1 glass warm water + 1 tbsp chia seeds (soaked 30 min). Add squeeze of lemon for iron absorption.", nutrients: "Fiber 5g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake", desc: "1 scoop whey protein + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed (replace sunflower with flax for omega-3)", nutrients: "Protein 35g | Fiber 4g | Omega-3 2g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee — no sugar. Can add a pinch of cinnamon (helps blood sugar).", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Oats Chilla + Salad", desc: "2 besan-oat chilla (gram flour + oats + spinach + onion) with mint chutney. Side: cucumber-tomato-carrot salad with lemon dressing + 2 boiled eggs.", nutrients: "Protein 35g | Fiber 10g | Cal ~550" },
+        snack: { time: "4:00 PM", name: "Handful of Walnuts + Green Tea", desc: "10-12 walnut halves + 1 cup green tea (unsweetened). Walnuts boost HDL significantly.", nutrients: "Protein 4g | Omega-3 2.5g | Cal ~200" },
+        dinner: { time: "7:30 PM", name: "Masoor Dal + Brown Rice + Sabji", desc: "1 cup masoor dal (rich in iron & soluble fiber) + 3/4 cup brown rice + lauki/turai sabji cooked in 1 tsp mustard oil. Side: small kachumber salad.", nutrients: "Protein 25g | Fiber 12g | Cal ~600" }
+      },
+      Tue: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia Seeds", desc: "Same as Monday. Consistency is key.", nutrients: "Fiber 5g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Rajma Bowl", desc: "1 cup rajma (kidney beans — excellent soluble fiber) + 3/4 cup brown rice + side salad with flaxseed oil dressing. 2 boiled eggs.", nutrients: "Protein 32g | Fiber 14g | Cal ~580" },
+        snack: { time: "4:00 PM", name: "Apple + Almond Butter", desc: "1 medium apple sliced + 1 tbsp almond butter. Pectin in apple lowers LDL.", nutrients: "Protein 4g | Fiber 5g | Cal ~200" },
+        dinner: { time: "7:30 PM", name: "Moong Dal Khichdi + Kadhi", desc: "1.5 cups moong dal khichdi (brown rice + moong dal) + light kadhi (besan + buttermilk, minimal oil). Side: steamed broccoli.", nutrients: "Protein 22g | Fiber 8g | Cal ~550" }
+      },
+      Wed: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia Seeds", desc: "1 glass warm water + 1 tbsp chia seeds soaked 30 min + lemon squeeze.", nutrients: "Fiber 5g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Chickpea Salad Bowl", desc: "1.5 cups chickpeas + quinoa + cucumber + tomato + red onion + parsley + lemon-tahini dressing. 2 boiled eggs on the side.", nutrients: "Protein 38g | Fiber 13g | Cal ~580" },
+        snack: { time: "4:00 PM", name: "Roasted Makhana + Green Tea", desc: "1 cup dry roasted makhana (fox nuts) with a pinch of turmeric & black pepper. Low cal, high protein snack.", nutrients: "Protein 5g | Fiber 2g | Cal ~150" },
+        dinner: { time: "7:30 PM", name: "Palak Paneer + Roti", desc: "Palak paneer (use low-fat paneer, minimal oil/ghee) + 2 multigrain roti + side of pickled onion. Spinach = iron.", nutrients: "Protein 28g | Fiber 8g | Cal ~600" }
+      },
+      Thu: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia Seeds", desc: "1 glass warm water + 1 tbsp chia seeds soaked 30 min.", nutrients: "Fiber 5g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Mexican Bean Bowl", desc: "Black beans + pinto beans + brown rice + roasted bell peppers + corn + salsa + avocado slice (healthy fat for HDL). 2 boiled eggs.", nutrients: "Protein 35g | Fiber 16g | Cal ~600" },
+        snack: { time: "4:00 PM", name: "Walnuts + Dark Chocolate", desc: "8-10 walnut halves + 2 squares 85% dark chocolate (stevia-sweetened ok). Flavonoids help HDL.", nutrients: "Protein 5g | Cal ~220" },
+        dinner: { time: "7:30 PM", name: "Chana Dal + Bajra Roti + Sabji", desc: "1 cup chana dal + 2 bajra (millet) roti + bhindi (okra) sabji cooked in minimal mustard oil. Okra has soluble fiber.", nutrients: "Protein 24g | Fiber 12g | Cal ~560" }
+      },
+      Fri: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia Seeds", desc: "1 glass warm water + 1 tbsp chia seeds soaked 30 min + lemon.", nutrients: "Fiber 5g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Oats Upma + Boiled Eggs", desc: "Oats upma with mixed veggies (peas, carrots, beans, onion, curry leaves, mustard seeds). 2 boiled eggs on the side.", nutrients: "Protein 32g | Fiber 10g | Cal ~500" },
+        snack: { time: "4:00 PM", name: "Carrot Sticks + Hummus", desc: "1 cup carrot sticks + 3 tbsp hummus. Chickpea fiber + beta carotene.", nutrients: "Protein 6g | Fiber 5g | Cal ~180" },
+        dinner: { time: "7:30 PM", name: "Toor Dal + Brown Rice + Baingan Bharta", desc: "1 cup toor dal + 3/4 cup brown rice + baingan bharta (roasted eggplant mash). Eggplant has nasunin which helps cholesterol.", nutrients: "Protein 22g | Fiber 10g | Cal ~580" }
+      },
+      Sat: {
+        earlyMorning: { time: "7:00 AM", name: "Warm Water + Chia Seeds", desc: "1 glass warm water + 1 tbsp chia seeds soaked 30 min.", nutrients: "Fiber 5g | Omega-3 2.5g" },
+        shake: { time: "7:45 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:30 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "1:00 PM", name: "Chole + Multigrain Roti", desc: "1 cup chole (chickpeas — homemade, less oil) + 2 multigrain roti + onion-lemon salad. Skip store-bought chole masala — use homemade. 2 boiled eggs.", nutrients: "Protein 34g | Fiber 14g | Cal ~620" },
+        snack: { time: "4:30 PM", name: "Mixed Seeds Trail Mix", desc: "1 tbsp each: pumpkin seeds, sunflower seeds, flaxseed + a few almonds. Plant sterols lower cholesterol.", nutrients: "Protein 8g | Omega-3 2g | Cal ~200" },
+        dinner: { time: "8:00 PM", name: "Veggie Stir-Fry + Quinoa", desc: "Mixed vegetables (bell pepper, broccoli, mushroom, snap peas) stir-fried in 1 tsp olive oil with garlic, ginger, soy sauce + 3/4 cup quinoa.", nutrients: "Protein 20g | Fiber 10g | Cal ~500" }
+      },
+      Sun: {
+        earlyMorning: { time: "7:00 AM", name: "Warm Water + Chia Seeds", desc: "1 glass warm water + 1 tbsp chia seeds soaked 30 min + lemon.", nutrients: "Fiber 5g | Omega-3 2.5g" },
+        shake: { time: "7:45 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:30 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "1:00 PM", name: "Methi Thepla + Dahi + Eggs", desc: "3 methi (fenugreek) thepla + 1 cup low-fat dahi + green chutney. Fenugreek seeds actively lower cholesterol. 2 boiled eggs.", nutrients: "Protein 30g | Fiber 8g | Cal ~550" },
+        snack: { time: "4:30 PM", name: "Sprouts Chaat", desc: "1 cup mixed sprouts (moong + moth) + onion + tomato + lemon + chaat masala. High protein, high fiber.", nutrients: "Protein 12g | Fiber 8g | Cal ~180" },
+        dinner: { time: "8:00 PM", name: "Dal Palak + Jowar Roti", desc: "Moong dal with spinach (iron + protein) + 2 jowar (sorghum) roti + cucumber raita with roasted jeera.", nutrients: "Protein 24g | Fiber 10g | Cal ~540" }
+      }
+    }
+  },
+  week2: {
+    name: "Week 2 — Variety",
+    days: {
+      Mon: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia seeds (soaked) + 1 tsp psyllium husk (isabgol). Psyllium is a cholesterol-lowering powerhouse.", nutrients: "Fiber 9g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Moong Sprouts Salad + Eggs", desc: "1.5 cups moong sprouts + cucumber + tomato + onion + green chili + lemon + chaat masala + 2 boiled eggs. Side: 1 multigrain roti.", nutrients: "Protein 36g | Fiber 12g | Cal ~520" },
+        snack: { time: "4:00 PM", name: "Almonds + Pear", desc: "12 almonds (soaked overnight for better absorption) + 1 medium pear. Pear pectin lowers LDL.", nutrients: "Protein 6g | Fiber 6g | Cal ~230" },
+        dinner: { time: "7:30 PM", name: "Sambar + Brown Rice + Beans Poriyal", desc: "1 cup sambar (lentil + veggie stew) + 3/4 cup brown rice + green beans poriyal (stir-fry with coconut). Multi-lentil sambar = protein powerhouse.", nutrients: "Protein 22g | Fiber 12g | Cal ~580" }
+      },
+      Tue: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "Continue adding 1 tsp isabgol to your morning routine.", nutrients: "Fiber 9g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Paneer Bhurji Wrap", desc: "Low-fat paneer bhurji (scrambled with onion, tomato, green chili, turmeric) in 2 whole wheat tortillas + side salad. 2 boiled eggs.", nutrients: "Protein 40g | Fiber 8g | Cal ~600" },
+        snack: { time: "4:00 PM", name: "Roasted Makhana + Green Tea", desc: "1 cup roasted makhana with turmeric & black pepper + green tea.", nutrients: "Protein 5g | Cal ~150" },
+        dinner: { time: "7:30 PM", name: "Rajma + Jowar Roti + Raita", desc: "1 cup rajma + 2 jowar roti + boondi raita (low-fat yogurt). Soluble fiber from rajma targets LDL.", nutrients: "Protein 24g | Fiber 14g | Cal ~580" }
+      },
+      Wed: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1 tsp isabgol.", nutrients: "Fiber 9g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Dal Fry + Brown Rice + Salad", desc: "1 cup tadka dal fry (toor+masoor mix, minimal oil) + 3/4 cup brown rice + large mixed green salad with walnuts + 2 boiled eggs.", nutrients: "Protein 34g | Fiber 12g | Cal ~580" },
+        snack: { time: "4:00 PM", name: "Banana + Peanut Butter", desc: "1 medium banana + 1 tbsp natural peanut butter (no added oil/sugar). Potassium + protein.", nutrients: "Protein 5g | Fiber 4g | Cal ~220" },
+        dinner: { time: "7:30 PM", name: "Stuffed Paratha (Methi) + Dahi", desc: "2 methi stuffed multigrain paratha (minimal oil, use tawa not deep fry) + 1 cup low-fat dahi + pickle.", nutrients: "Protein 18g | Fiber 8g | Cal ~520" }
+      },
+      Thu: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1 tsp isabgol.", nutrients: "Fiber 9g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Lentil Soup + Whole Wheat Bread", desc: "Large bowl of mixed lentil soup (masoor + moong) with spinach, carrot, tomato + 2 slices whole wheat bread + 2 boiled eggs.", nutrients: "Protein 34g | Fiber 14g | Cal ~550" },
+        snack: { time: "4:00 PM", name: "Walnuts + Orange", desc: "8-10 walnut halves + 1 orange. Vitamin C from orange helps iron absorption and walnuts boost HDL.", nutrients: "Protein 5g | Fiber 4g | Cal ~230" },
+        dinner: { time: "7:30 PM", name: "Undhiyu-style Mixed Veg + Roti", desc: "Gujarati-style mixed vegetable (yam, beans, eggplant, banana, potato — light on potato) + 2 multigrain roti. Cook with minimal oil.", nutrients: "Protein 16g | Fiber 12g | Cal ~540" }
+      },
+      Fri: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1 tsp isabgol.", nutrients: "Fiber 9g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Quinoa Veggie Bowl", desc: "Quinoa + roasted sweet potato + black beans + avocado + cherry tomatoes + lime-cilantro dressing + 2 boiled eggs.", nutrients: "Protein 36g | Fiber 14g | Cal ~600" },
+        snack: { time: "4:00 PM", name: "Hummus + Bell Pepper", desc: "3 tbsp hummus + sliced bell peppers (red & yellow). Capsaicin + fiber.", nutrients: "Protein 5g | Fiber 4g | Cal ~170" },
+        dinner: { time: "7:30 PM", name: "Palak Dal + Bajra Roti", desc: "Moong dal cooked with palak (spinach) + 2 bajra roti + side of steamed carrots & beans.", nutrients: "Protein 22g | Fiber 10g | Cal ~520" }
+      },
+      Sat: {
+        earlyMorning: { time: "7:00 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1 tsp isabgol.", nutrients: "Fiber 9g | Omega-3 2.5g" },
+        shake: { time: "7:45 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:30 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "1:00 PM", name: "Chole Chaat + Eggs", desc: "Chole chaat style — chickpeas with onion, tomato, green chutney, tamarind chutney, light sev + 2 boiled eggs. No puri/bhature.", nutrients: "Protein 34g | Fiber 12g | Cal ~520" },
+        snack: { time: "4:30 PM", name: "Greek Yogurt + Berries", desc: "1 cup plain Greek yogurt (high protein) + 1/2 cup mixed berries (blueberries, strawberries). Can sweeten with monk fruit.", nutrients: "Protein 15g | Fiber 3g | Cal ~200" },
+        dinner: { time: "8:00 PM", name: "Tofu Stir-Fry + Brown Rice", desc: "Firm tofu stir-fried with broccoli, mushroom, bell pepper in sesame oil + ginger-garlic + soy sauce + 3/4 cup brown rice.", nutrients: "Protein 26g | Fiber 8g | Cal ~520" }
+      },
+      Sun: {
+        earlyMorning: { time: "7:00 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1 tsp isabgol.", nutrients: "Fiber 9g | Omega-3 2.5g" },
+        shake: { time: "7:45 AM", name: "Protein Shake", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 1 tbsp pumpkin seeds + 1 tbsp ground flaxseed.", nutrients: "Protein 35g | Fiber 4g" },
+        coffee: { time: "8:30 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "1:00 PM", name: "Handvo + Chutney + Eggs", desc: "2 slices Gujarati handvo (rice-lentil savory cake with veggies) + green chutney + 2 boiled eggs. High protein from lentil batter.", nutrients: "Protein 30g | Fiber 8g | Cal ~550" },
+        snack: { time: "4:30 PM", name: "Sprouts + Pomegranate", desc: "1 cup mixed sprouts + pomegranate seeds + lemon + chaat masala. Antioxidants + protein.", nutrients: "Protein 10g | Fiber 8g | Cal ~180" },
+        dinner: { time: "8:00 PM", name: "Kadhi + Brown Rice + Bhindi", desc: "Light kadhi (besan + buttermilk) + 3/4 cup brown rice + bhindi (okra) sabji. Okra mucilage binds cholesterol.", nutrients: "Protein 18g | Fiber 10g | Cal ~540" }
+      }
+    }
+  },
+  week3: {
+    name: "Week 3 — Intensify Fiber",
+    days: {
+      Mon: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium husk. Gradually increasing psyllium for max LDL reduction.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed. Oat beta-glucan is proven LDL reducer.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Barley-Vegetable Khichdi + Eggs", desc: "Barley + moong dal khichdi with mixed veggies + 2 boiled eggs. Barley has highest beta-glucan of any grain.", nutrients: "Protein 34g | Fiber 14g | Cal ~560" },
+        snack: { time: "4:00 PM", name: "Walnuts + Apple", desc: "10 walnut halves + 1 apple. Two top cholesterol-lowering foods together.", nutrients: "Protein 5g | Fiber 5g | Cal ~250" },
+        dinner: { time: "7:30 PM", name: "Chana Masala + Ragi Roti", desc: "1 cup chana masala (homemade, less oil) + 2 ragi (finger millet) roti + side salad. Ragi = calcium + iron.", nutrients: "Protein 24g | Fiber 14g | Cal ~580" }
+      },
+      Tue: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Black Bean Burrito Bowl", desc: "Black beans + brown rice + corn + pico de gallo + guacamole + lettuce + lime + 2 boiled eggs. Can make at home easily.", nutrients: "Protein 36g | Fiber 16g | Cal ~620" },
+        snack: { time: "4:00 PM", name: "Roasted Chana + Green Tea", desc: "1/2 cup roasted chana (with skin) + green tea. High protein low-calorie snack.", nutrients: "Protein 10g | Fiber 6g | Cal ~170" },
+        dinner: { time: "7:30 PM", name: "Methi Dal + Multigrain Roti + Gobi", desc: "Dal with fenugreek leaves + 2 multigrain roti + gobi (cauliflower) dry sabji. Fenugreek actively lowers cholesterol.", nutrients: "Protein 22g | Fiber 10g | Cal ~540" }
+      },
+      Wed: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Oats Dosa + Sambar", desc: "2 oats dosa (oats + urad dal batter) + 1 cup sambar + coconut chutney (minimal). 2 boiled eggs.", nutrients: "Protein 32g | Fiber 12g | Cal ~550" },
+        snack: { time: "4:00 PM", name: "Mixed Nuts + Dark Chocolate", desc: "8 almonds + 5 walnuts + 2 squares 85% dark chocolate.", nutrients: "Protein 7g | Cal ~240" },
+        dinner: { time: "7:30 PM", name: "Moong Dal Cheela + Paneer Filling", desc: "3 moong dal cheela stuffed with low-fat paneer + mint chutney + side salad.", nutrients: "Protein 32g | Fiber 8g | Cal ~500" }
+      },
+      Thu: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Mediterranean Bowl", desc: "Quinoa + falafel (baked) + hummus + tabbouleh + roasted veggies + tahini dressing. 2 boiled eggs.", nutrients: "Protein 35g | Fiber 14g | Cal ~600" },
+        snack: { time: "4:00 PM", name: "Edamame + Lemon", desc: "1 cup steamed edamame with sea salt and lemon. Soy protein lowers cholesterol.", nutrients: "Protein 17g | Fiber 8g | Cal ~190" },
+        dinner: { time: "7:30 PM", name: "Vegetable Daliya + Raita", desc: "1.5 cups broken wheat (daliya) cooked with mixed veggies + 1 cup cucumber raita. Daliya = excellent soluble fiber.", nutrients: "Protein 16g | Fiber 12g | Cal ~480" }
+      },
+      Fri: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Stuffed Bell Pepper + Eggs", desc: "2 bell peppers stuffed with quinoa + black beans + corn + cheese (low-fat) + salsa, baked. 2 boiled eggs.", nutrients: "Protein 34g | Fiber 12g | Cal ~560" },
+        snack: { time: "4:00 PM", name: "Flax Crackers + Avocado", desc: "Flaxseed crackers + 1/4 avocado mash with lemon & pepper. Healthy fats + omega-3.", nutrients: "Protein 4g | Fiber 6g | Cal ~200" },
+        dinner: { time: "7:30 PM", name: "Masoor Dal + Jeera Rice + Sabji", desc: "1 cup masoor dal + 3/4 cup jeera brown rice + tindora/parwal sabji.", nutrients: "Protein 24g | Fiber 10g | Cal ~560" }
+      },
+      Sat: {
+        earlyMorning: { time: "7:00 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:45 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:30 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "1:00 PM", name: "Pav Bhaji (Healthy Version)", desc: "Bhaji loaded with veggies (cauliflower, peas, bell pepper, beans — minimal potato & butter) + 2 multigrain pav + 2 boiled eggs. No excess butter!", nutrients: "Protein 30g | Fiber 12g | Cal ~580" },
+        snack: { time: "4:30 PM", name: "Greek Yogurt Parfait", desc: "1 cup Greek yogurt + 2 tbsp oats granola (no sugar) + berries + 1 tbsp flaxseed.", nutrients: "Protein 18g | Fiber 4g | Cal ~250" },
+        dinner: { time: "8:00 PM", name: "Mushroom + Tofu Curry + Roti", desc: "Mushroom-tofu curry in light gravy + 2 multigrain roti. Mushroom has lovastatin — natural statin!", nutrients: "Protein 28g | Fiber 6g | Cal ~520" }
+      },
+      Sun: {
+        earlyMorning: { time: "7:00 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:45 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:30 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "1:00 PM", name: "Dhokla + Green Chutney + Eggs", desc: "4 pieces steamed dhokla (besan — high protein, low oil Gujarati dish) + green chutney + 2 boiled eggs.", nutrients: "Protein 30g | Fiber 6g | Cal ~480" },
+        snack: { time: "4:30 PM", name: "Fruit Bowl", desc: "1 cup mixed berries + 1/2 pomegranate + 1 kiwi. Antioxidants support arterial health.", nutrients: "Fiber 6g | Cal ~160" },
+        dinner: { time: "8:00 PM", name: "Toor Dal + Brown Rice + Aloo Gobi", desc: "1 cup toor dal + 3/4 cup brown rice + aloo gobi (less potato, more gobi) cooked in mustard oil.", nutrients: "Protein 22g | Fiber 10g | Cal ~560" }
+      }
+    }
+  },
+  week4: {
+    name: "Week 4 — Sustain",
+    days: {
+      Mon: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium. This is now your daily habit.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Kala Chana Salad + Eggs", desc: "1.5 cups kala chana (black chickpeas) + cucumber + tomato + red onion + cilantro + lemon + 2 boiled eggs + 1 roti.", nutrients: "Protein 36g | Fiber 16g | Cal ~580" },
+        snack: { time: "4:00 PM", name: "Trail Mix + Green Tea", desc: "Walnuts + almonds + pumpkin seeds + dried cranberries (unsweetened) + green tea.", nutrients: "Protein 8g | Cal ~220" },
+        dinner: { time: "7:30 PM", name: "Palak Paneer + Brown Rice", desc: "Palak paneer (low-fat paneer, minimal oil) + 3/4 cup brown rice + kachumber salad.", nutrients: "Protein 26g | Fiber 8g | Cal ~560" }
+      },
+      Tue: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Mixed Dal + Roti + Sabji", desc: "Panchmel dal (5 lentil mix) + 2 multigrain roti + mixed veg sabji + 2 boiled eggs.", nutrients: "Protein 34g | Fiber 14g | Cal ~600" },
+        snack: { time: "4:00 PM", name: "Edamame + Orange", desc: "1 cup steamed edamame + 1 orange. Soy protein + vitamin C.", nutrients: "Protein 18g | Fiber 5g | Cal ~210" },
+        dinner: { time: "7:30 PM", name: "Veggie Soup + Garlic Bread", desc: "Large bowl lentil-vegetable soup (homemade) + 2 slices whole wheat garlic toast (minimal butter).", nutrients: "Protein 18g | Fiber 12g | Cal ~480" }
+      },
+      Wed: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Oats Cheela + Chutney + Eggs", desc: "3 oat-besan cheela (oats + gram flour + veggies) + green chutney + 2 boiled eggs + cucumber salad.", nutrients: "Protein 36g | Fiber 10g | Cal ~540" },
+        snack: { time: "4:00 PM", name: "Makhana + Walnuts", desc: "3/4 cup roasted makhana + 6 walnut halves.", nutrients: "Protein 8g | Cal ~200" },
+        dinner: { time: "7:30 PM", name: "Chole + Jowar Roti + Salad", desc: "1 cup chole (homemade) + 2 jowar roti + onion-tomato salad.", nutrients: "Protein 24g | Fiber 14g | Cal ~570" }
+      },
+      Thu: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Tofu Bhurji + Roti + Eggs", desc: "Tofu bhurji (like paneer bhurji but with firm tofu — more soy protein for cholesterol) + 2 multigrain roti + 2 boiled eggs.", nutrients: "Protein 40g | Fiber 8g | Cal ~560" },
+        snack: { time: "4:00 PM", name: "Apple + Almond Butter", desc: "1 apple sliced + 1 tbsp almond butter.", nutrients: "Protein 4g | Fiber 5g | Cal ~200" },
+        dinner: { time: "7:30 PM", name: "Sambar + Brown Rice + Poriyal", desc: "Mixed veg sambar + 3/4 cup brown rice + cabbage-carrot poriyal.", nutrients: "Protein 20g | Fiber 12g | Cal ~540" }
+      },
+      Fri: {
+        earlyMorning: { time: "6:30 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:15 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:00 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "12:30 PM", name: "Rajma Rice + Salad + Eggs", desc: "Rajma chawal (brown rice) + big side salad with walnut pieces + 2 boiled eggs.", nutrients: "Protein 34g | Fiber 16g | Cal ~600" },
+        snack: { time: "4:00 PM", name: "Sprouts Chaat", desc: "1 cup mixed sprouts + pomegranate + onion + chaat masala + lemon.", nutrients: "Protein 12g | Fiber 8g | Cal ~180" },
+        dinner: { time: "7:30 PM", name: "Paneer Tikka + Mint Chutney + Roti", desc: "Paneer tikka (baked, not fried, low-fat paneer) with bell peppers & onion + mint chutney + 2 multigrain roti.", nutrients: "Protein 28g | Fiber 6g | Cal ~540" }
+      },
+      Sat: {
+        earlyMorning: { time: "7:00 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:45 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:30 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "1:00 PM", name: "Thepla + Shrikhand (Light) + Eggs", desc: "3 methi thepla + 1/2 cup hung curd shrikhand (use monk fruit sweetener, low-fat dahi) + 2 boiled eggs.", nutrients: "Protein 30g | Fiber 6g | Cal ~550" },
+        snack: { time: "4:30 PM", name: "Greek Yogurt + Walnuts", desc: "1 cup Greek yogurt + 6 walnut halves + drizzle of honey alternative (monk fruit).", nutrients: "Protein 16g | Cal ~220" },
+        dinner: { time: "8:00 PM", name: "Mushroom Matar + Roti", desc: "Mushroom-peas curry (natural statin from mushrooms) + 2 multigrain roti + raita.", nutrients: "Protein 22g | Fiber 8g | Cal ~520" }
+      },
+      Sun: {
+        earlyMorning: { time: "7:00 AM", name: "Warm Water + Chia + Psyllium", desc: "1 glass warm water + 1 tbsp chia + 1.5 tsp psyllium.", nutrients: "Fiber 11g | Omega-3 2.5g" },
+        shake: { time: "7:45 AM", name: "Protein Shake + Oats", desc: "1 scoop whey + 300ml low-fat milk + 1 tbsp cacao + 2 tbsp rolled oats + 1 tbsp ground flaxseed.", nutrients: "Protein 37g | Fiber 6g" },
+        coffee: { time: "8:30 AM", name: "Black Coffee", desc: "Black coffee with cinnamon.", nutrients: "" },
+        lunch: { time: "1:00 PM", name: "Khaman Dhokla + Chutney + Eggs", desc: "4 pieces khaman + green chutney + sweet chutney (dates, no sugar) + 2 boiled eggs. Steam-cooked = heart healthy.", nutrients: "Protein 28g | Fiber 6g | Cal ~480" },
+        snack: { time: "4:30 PM", name: "Smoothie Bowl", desc: "Blended berries + banana + oats + flaxseed + monk fruit. Top with pumpkin seeds.", nutrients: "Protein 10g | Fiber 8g | Cal ~250" },
+        dinner: { time: "8:00 PM", name: "Dal Makhani (Light) + Brown Rice", desc: "Homemade dal makhani (use low-fat yogurt instead of cream, minimal butter) + 3/4 cup brown rice + salad.", nutrients: "Protein 22g | Fiber 12g | Cal ~560" }
+      }
+    }
+  }
+};
+
+// GROCERY DATA
+const GROCERY_DATA = {
+  week1: {
+    name: "Week 1",
+    categories: [
+      {
+        name: "Proteins & Dairy",
+        items: [
+          { name: "Eggs (free-range, 2 dozen)", store: "costco", detail: "Kirkland Organic — ~$7.99/2dz", qty: "24 eggs" },
+          { name: "Whey Protein (if running low)", store: "costco", detail: "Optimum Nutrition Gold Standard 5lb — ~$58", qty: "1 tub" },
+          { name: "Low-fat Milk (organic)", store: "costco", detail: "Kirkland Organic 2% or 1% — 3 half gallons", qty: "1.5 gal" },
+          { name: "Low-fat Paneer", store: "patel", detail: "Nanak or Amul lite paneer — ~$5", qty: "2 blocks" },
+          { name: "Greek Yogurt (plain)", store: "costco", detail: "Kirkland Greek Yogurt — ~$7", qty: "2 tubs" },
+          { name: "Low-fat Dahi/Yogurt", store: "patel", detail: "Desi Natural Dahi — ~$4", qty: "2 tubs" },
+          { name: "Firm Tofu", store: "tj", detail: "Trader Joe's Organic Firm Tofu — ~$2", qty: "2 packs" }
+        ]
+      },
+      {
+        name: "Lentils & Beans",
+        items: [
+          { name: "Masoor Dal (red lentils)", store: "patel", detail: "Deep or Swad brand — ~$4/2lb", qty: "2 lb" },
+          { name: "Moong Dal (yellow)", store: "patel", detail: "Deep or Swad — ~$4/2lb", qty: "2 lb" },
+          { name: "Toor Dal", store: "patel", detail: "Deep or Swad — ~$5/2lb", qty: "2 lb" },
+          { name: "Chana Dal", store: "patel", detail: "Deep or Swad — ~$4/2lb", qty: "1 lb" },
+          { name: "Rajma (kidney beans)", store: "patel", detail: "Swad brand — ~$3/2lb", qty: "2 lb" },
+          { name: "Kabuli Chana (chickpeas)", store: "patel", detail: "Swad — ~$3/2lb", qty: "2 lb" },
+          { name: "Black Beans (canned)", store: "costco", detail: "Kirkland Organic Black Beans — ~$8/8-pack", qty: "4 cans" },
+          { name: "Mixed Sprouts", store: "patel", detail: "Moong + moth beans for sprouting — ~$3", qty: "1 lb" }
+        ]
+      },
+      {
+        name: "Grains & Flour",
+        items: [
+          { name: "Brown Rice", store: "costco", detail: "Lundberg Organic Brown Rice — ~$12", qty: "5 lb" },
+          { name: "Quinoa", store: "costco", detail: "Kirkland Organic Quinoa — ~$9", qty: "4.5 lb" },
+          { name: "Rolled Oats", store: "costco", detail: "Quaker Old Fashioned Oats — ~$8", qty: "5 lb" },
+          { name: "Multigrain Atta", store: "patel", detail: "Sujata or Pillsbury Multigrain — ~$8", qty: "10 lb" },
+          { name: "Bajra Flour", store: "patel", detail: "Deep or Swad brand — ~$4", qty: "2 lb" },
+          { name: "Jowar Flour", store: "patel", detail: "Deep or Swad brand — ~$4", qty: "2 lb" },
+          { name: "Besan (gram flour)", store: "patel", detail: "Deep besan — ~$4/2lb", qty: "2 lb" },
+          { name: "Whole Wheat Bread", store: "kroger", detail: "Dave's Killer Bread Whole Grain — ~$5", qty: "1 loaf" }
+        ]
+      },
+      {
+        name: "Vegetables",
+        items: [
+          { name: "Spinach (baby)", store: "costco", detail: "Organic Baby Spinach 1lb — ~$5", qty: "2 packs" },
+          { name: "Broccoli", store: "tj", detail: "Broccoli crowns — ~$2.50", qty: "2 heads" },
+          { name: "Bell Peppers (mix)", store: "costco", detail: "Organic Bell Pepper 6-pack — ~$6", qty: "6 peppers" },
+          { name: "Cucumber", store: "kroger", detail: "English cucumbers — ~$1.50 each", qty: "3 pcs" },
+          { name: "Tomatoes", store: "kroger", detail: "Roma or vine-ripened — ~$2/lb", qty: "2 lb" },
+          { name: "Onions", store: "costco", detail: "Yellow onions 10lb bag — ~$5", qty: "10 lb" },
+          { name: "Carrots", store: "tj", detail: "Organic carrots bag — ~$1.50", qty: "2 lb" },
+          { name: "Lauki (bottle gourd)", store: "patel", detail: "Fresh — ~$2", qty: "1 pc" },
+          { name: "Turai (ridge gourd)", store: "patel", detail: "Fresh — ~$2", qty: "1 lb" },
+          { name: "Bhindi (okra)", store: "patel", detail: "Fresh okra — ~$3/lb", qty: "1 lb" },
+          { name: "Green Chili", store: "patel", detail: "Fresh green chilies — ~$1", qty: "0.25 lb" },
+          { name: "Ginger", store: "patel", detail: "Fresh ginger root — ~$2", qty: "0.5 lb" },
+          { name: "Coriander (cilantro)", store: "patel", detail: "Fresh bunches — ~$1", qty: "2 bunches" },
+          { name: "Mushrooms", store: "tj", detail: "White or baby bella — ~$2.50", qty: "8 oz" },
+          { name: "Baingan (eggplant)", store: "patel", detail: "Indian eggplant — ~$2", qty: "1 lb" },
+          { name: "Avocados", store: "costco", detail: "Organic avocados 5-pack — ~$7", qty: "5 pcs" }
+        ]
+      },
+      {
+        name: "Fruits",
+        items: [
+          { name: "Apples (Fuji/Gala)", store: "costco", detail: "Organic apples bag — ~$8", qty: "5 lb" },
+          { name: "Bananas", store: "tj", detail: "Organic bananas — ~$0.25/each", qty: "7 pcs" },
+          { name: "Mixed Berries (frozen)", store: "costco", detail: "Kirkland Frozen Mixed Berries — ~$10", qty: "3 lb" },
+          { name: "Lemons", store: "kroger", detail: "Bag of lemons — ~$3", qty: "6 pcs" },
+          { name: "Pomegranate", store: "patel", detail: "Fresh pomegranate — ~$2 each", qty: "2 pcs" }
+        ]
+      },
+      {
+        name: "Seeds, Nuts & Healthy Fats",
+        items: [
+          { name: "Chia Seeds", store: "costco", detail: "Nutiva Organic Chia Seeds — ~$10", qty: "2 lb" },
+          { name: "Ground Flaxseed", store: "costco", detail: "Spectrum or Barlean's — ~$9", qty: "24 oz" },
+          { name: "Walnuts", store: "costco", detail: "Kirkland Walnuts — ~$12", qty: "3 lb" },
+          { name: "Almonds", store: "costco", detail: "Kirkland Almonds — ~$12", qty: "3 lb" },
+          { name: "Pumpkin Seeds", store: "costco", detail: "Kirkland Pumpkin Seeds — ~$9", qty: "2 lb" },
+          { name: "Almond Butter (natural)", store: "tj", detail: "TJ's Almond Butter — ~$7", qty: "1 jar" },
+          { name: "Tahini", store: "tj", detail: "TJ's Organic Tahini — ~$4", qty: "1 jar" },
+          { name: "Extra Virgin Olive Oil", store: "costco", detail: "Kirkland Organic EVOO — ~$14", qty: "1 L" },
+          { name: "Mustard Oil", store: "patel", detail: "Idhayam or Fortune — ~$6", qty: "1 L" }
+        ]
+      },
+      {
+        name: "Spices & Pantry",
+        items: [
+          { name: "Turmeric Powder", store: "patel", detail: "Everest or MDH — ~$3", qty: "200g" },
+          { name: "Coriander Powder", store: "patel", detail: "Everest or MDH — ~$3", qty: "200g" },
+          { name: "Cumin Seeds (Jeera)", store: "patel", detail: "Deep or Swad — ~$3", qty: "200g" },
+          { name: "Red Chili Powder", store: "patel", detail: "Everest or MDH — ~$3", qty: "200g" },
+          { name: "Garam Masala", store: "patel", detail: "MDH or Everest — ~$3", qty: "100g" },
+          { name: "Mustard Seeds", store: "patel", detail: "Deep — ~$2", qty: "100g" },
+          { name: "Cinnamon Sticks/Powder", store: "patel", detail: "For coffee & cooking — ~$3", qty: "100g" },
+          { name: "Chaat Masala", store: "patel", detail: "MDH — ~$2", qty: "100g" },
+          { name: "Psyllium Husk (Isabgol)", store: "patel", detail: "Sat-Isabgol or Telephone brand — ~$5", qty: "200g" },
+          { name: "Cacao Powder (unsweetened)", store: "tj", detail: "TJ's Organic Cacao — ~$5", qty: "8 oz" },
+          { name: "Dark Chocolate 85%+", store: "tj", detail: "TJ's Dark Chocolate Bar — ~$3", qty: "2 bars" },
+          { name: "Hummus", store: "costco", detail: "Kirkland Organic Hummus — ~$6", qty: "1 pack" },
+          { name: "Green Tea bags", store: "tj", detail: "TJ's Organic Green Tea — ~$3", qty: "1 box" },
+          { name: "Monk Fruit Sweetener", store: "kroger", detail: "Lakanto Monk Fruit — ~$8", qty: "1 bag" },
+          { name: "Makhana (fox nuts)", store: "patel", detail: "Deep or Swad brand — ~$5", qty: "200g" },
+          { name: "Roasted Chana", store: "patel", detail: "Haldiram's or Deep — ~$3", qty: "400g" }
+        ]
+      }
+    ]
+  },
+  week2: {
+    name: "Week 2",
+    categories: [
+      {
+        name: "Fresh Refills",
+        items: [
+          { name: "Eggs (2 dozen)", store: "costco", detail: "Kirkland Organic", qty: "24" },
+          { name: "Low-fat Milk", store: "costco", detail: "Kirkland Organic", qty: "1 gal" },
+          { name: "Low-fat Paneer", store: "patel", detail: "Nanak paneer", qty: "1 block" },
+          { name: "Tofu", store: "tj", detail: "Organic firm tofu", qty: "2 packs" },
+          { name: "Greek Yogurt", store: "costco", detail: "Kirkland plain", qty: "1 tub" },
+          { name: "Low-fat Dahi", store: "patel", detail: "Desi Natural Dahi", qty: "1 tub" },
+          { name: "Spinach", store: "costco", detail: "Organic baby spinach", qty: "1 pack" },
+          { name: "Broccoli", store: "tj", detail: "Broccoli crowns", qty: "2 heads" },
+          { name: "Cucumber", store: "kroger", detail: "English cucumbers", qty: "3 pcs" },
+          { name: "Tomatoes", store: "kroger", detail: "Roma or vine-ripened", qty: "2 lb" },
+          { name: "Carrots", store: "tj", detail: "Organic carrots", qty: "2 lb" },
+          { name: "Pear", store: "kroger", detail: "Bartlett pears", qty: "4 pcs" },
+          { name: "Bell Peppers", store: "tj", detail: "Mixed colors", qty: "4 pcs" },
+          { name: "Methi (fenugreek leaves)", store: "patel", detail: "Fresh methi bunch — for thepla & dal", qty: "2 bunches" },
+          { name: "Green Chili", store: "patel", detail: "Fresh", qty: "0.25 lb" },
+          { name: "Coriander (cilantro)", store: "patel", detail: "Fresh bunches", qty: "2 bunches" },
+          { name: "Ginger", store: "patel", detail: "Fresh root", qty: "0.25 lb" },
+          { name: "Mushrooms", store: "tj", detail: "Baby bella", qty: "8 oz" },
+          { name: "Edamame (frozen)", store: "costco", detail: "Kirkland Organic Edamame", qty: "2 lb" },
+          { name: "Berries (fresh)", store: "tj", detail: "Blueberries & strawberries", qty: "2 packs" },
+          { name: "Banana", store: "tj", detail: "Organic", qty: "7 pcs" },
+          { name: "Orange", store: "kroger", detail: "Navel oranges", qty: "4 pcs" },
+          { name: "Sweet Potato", store: "kroger", detail: "For quinoa bowls", qty: "2 lb" },
+          { name: "Whole Wheat Tortillas", store: "costco", detail: "Mission Whole Wheat", qty: "1 pack" },
+          { name: "Snap Peas", store: "tj", detail: "Sugar snap peas", qty: "8 oz" }
+        ]
+      }
+    ]
+  },
+  week3: {
+    name: "Week 3",
+    categories: [
+      {
+        name: "Fresh Refills",
+        items: [
+          { name: "Eggs (2 dozen)", store: "costco", detail: "Kirkland Organic", qty: "24" },
+          { name: "Low-fat Milk", store: "costco", detail: "Kirkland Organic", qty: "1 gal" },
+          { name: "Low-fat Paneer", store: "patel", detail: "Nanak paneer", qty: "1 block" },
+          { name: "Greek Yogurt", store: "costco", detail: "Kirkland plain", qty: "1 tub" },
+          { name: "Low-fat Dahi", store: "patel", detail: "Desi Natural Dahi", qty: "1 tub" },
+          { name: "Tofu", store: "tj", detail: "Organic firm tofu", qty: "2 packs" },
+          { name: "Spinach", store: "costco", detail: "Organic baby spinach", qty: "1 pack" },
+          { name: "Broccoli", store: "tj", detail: "Broccoli crowns", qty: "2 heads" },
+          { name: "Cucumber", store: "kroger", detail: "English cucumbers", qty: "3 pcs" },
+          { name: "Tomatoes", store: "kroger", detail: "Roma", qty: "2 lb" },
+          { name: "Gobi (cauliflower)", store: "patel", detail: "Fresh cauliflower", qty: "1 head" },
+          { name: "Bell Peppers", store: "tj", detail: "Mixed colors", qty: "4 pcs" },
+          { name: "Green Chili", store: "patel", detail: "Fresh", qty: "0.25 lb" },
+          { name: "Coriander (cilantro)", store: "patel", detail: "Fresh bunches", qty: "2 bunches" },
+          { name: "Ginger", store: "patel", detail: "Fresh root", qty: "0.25 lb" },
+          { name: "Methi (fenugreek leaves)", store: "patel", detail: "Fresh methi bunch", qty: "2 bunches" },
+          { name: "Mushrooms", store: "tj", detail: "Baby bella", qty: "16 oz" },
+          { name: "Parwal/Tindora", store: "patel", detail: "Indian vegetables", qty: "1 lb" },
+          { name: "Corn (frozen)", store: "costco", detail: "Kirkland Organic Corn", qty: "2 lb" },
+          { name: "Apple", store: "kroger", detail: "Gala/Fuji", qty: "4 pcs" },
+          { name: "Banana", store: "tj", detail: "Organic", qty: "7 pcs" },
+          { name: "Berries", store: "tj", detail: "Blueberries", qty: "1 pack" },
+          { name: "Pomegranate", store: "patel", detail: "Fresh", qty: "2 pcs" },
+          { name: "Kiwi", store: "tj", detail: "Organic kiwis", qty: "4 pcs" },
+          { name: "Barley (hulled)", store: "patel", detail: "For khichdi — Swad brand", qty: "1 lb" },
+          { name: "Ragi Flour", store: "patel", detail: "Finger millet flour — Deep brand", qty: "2 lb" },
+          { name: "Flaxseed Crackers", store: "tj", detail: "TJ's Flax Crackers", qty: "1 box" },
+          { name: "Edamame (frozen)", store: "costco", detail: "Kirkland Organic", qty: "2 lb" },
+          { name: "Broken Wheat (Daliya)", store: "patel", detail: "Swad brand", qty: "2 lb" }
+        ]
+      }
+    ]
+  },
+  week4: {
+    name: "Week 4",
+    categories: [
+      {
+        name: "Fresh Refills",
+        items: [
+          { name: "Eggs (2 dozen)", store: "costco", detail: "Kirkland Organic", qty: "24" },
+          { name: "Low-fat Milk", store: "costco", detail: "Kirkland Organic", qty: "1 gal" },
+          { name: "Low-fat Paneer", store: "patel", detail: "Nanak paneer", qty: "1 block" },
+          { name: "Greek Yogurt", store: "costco", detail: "Kirkland plain", qty: "1 tub" },
+          { name: "Low-fat Dahi", store: "patel", detail: "Desi Natural Dahi", qty: "1 tub" },
+          { name: "Tofu", store: "tj", detail: "Organic firm tofu", qty: "1 pack" },
+          { name: "Spinach", store: "costco", detail: "Organic baby spinach", qty: "1 pack" },
+          { name: "Broccoli", store: "tj", detail: "Broccoli crowns", qty: "2 heads" },
+          { name: "Cucumber", store: "kroger", detail: "English cucumbers", qty: "3 pcs" },
+          { name: "Tomatoes", store: "kroger", detail: "Roma", qty: "2 lb" },
+          { name: "Onions", store: "kroger", detail: "Yellow onions", qty: "3 lb" },
+          { name: "Bell Peppers", store: "tj", detail: "Mixed colors", qty: "4 pcs" },
+          { name: "Green Chili", store: "patel", detail: "Fresh", qty: "0.25 lb" },
+          { name: "Coriander (cilantro)", store: "patel", detail: "Fresh bunches", qty: "2 bunches" },
+          { name: "Ginger", store: "patel", detail: "Fresh root", qty: "0.25 lb" },
+          { name: "Mushrooms", store: "tj", detail: "Baby bella", qty: "8 oz" },
+          { name: "Cabbage", store: "kroger", detail: "Green cabbage", qty: "1 head" },
+          { name: "Peas (frozen)", store: "costco", detail: "Kirkland Organic Peas", qty: "2 lb" },
+          { name: "Methi leaves", store: "patel", detail: "Fresh fenugreek", qty: "2 bunches" },
+          { name: "Apple", store: "kroger", detail: "Gala/Fuji", qty: "4 pcs" },
+          { name: "Banana", store: "tj", detail: "Organic", qty: "7 pcs" },
+          { name: "Berries (fresh)", store: "tj", detail: "Blueberries & strawberries", qty: "2 packs" },
+          { name: "Pomegranate", store: "patel", detail: "Fresh", qty: "1 pc" },
+          { name: "Handvo Mix (or make batter)", store: "patel", detail: "Gits or Deep brand", qty: "1 box" },
+          { name: "Dhokla/Khaman Mix", store: "patel", detail: "Gits Instant Khaman", qty: "1 box" }
+        ]
+      }
+    ]
+  }
+};
+
+// AVOID DATA
+const AVOID_DATA = [
+  { cat: "Fats & Oils", items: [
+    { name: "Ghee / Butter (excess)", icon: "🧈", reason: "Saturated fat directly raises LDL. Use max 1 tsp/day if needed. Your LDL is 152 — needs aggressive reduction." },
+    { name: "Coconut Oil (daily cooking)", icon: "🥥", reason: "High in saturated fat (82%). Use mustard oil or olive oil instead." },
+    { name: "Vanaspati / Hydrogenated Oil", icon: "🛢️", reason: "Trans fats — worst for cholesterol. Raises LDL AND lowers HDL. Found in cheap packaged snacks." },
+    { name: "Palm Oil", icon: "🌴", reason: "High saturated fat. Check packaged food labels — very common in Indian snacks." },
+    { name: "Cream / Malai", icon: "🥛", reason: "Full-fat dairy raises LDL. Use low-fat alternatives." }
+  ]},
+  { cat: "Processed & Packaged Foods", items: [
+    { name: "Namkeen / Bhujia / Sev", icon: "🍿", reason: "Deep fried in palm oil, high sodium. Raises triglycerides and LDL." },
+    { name: "Instant Noodles (Maggi)", icon: "🍜", reason: "High sodium, refined flour (maida), palm oil. Triple threat for your lipid panel." },
+    { name: "Packaged Chips", icon: "🥔", reason: "Trans fats, sodium, and refined carbs. Even 'baked' chips have palm oil." },
+    { name: "Bakery Items (samosa, kachori, puff)", icon: "🥐", reason: "Deep fried in vanaspati/reused oil. Very high trans fats." },
+    { name: "Ready-to-eat Meals", icon: "📦", reason: "High sodium and hidden saturated fats. Always check label for >5g sat fat." },
+    { name: "Store-bought Chole/Rajma Masala Paste", icon: "🫙", reason: "Contains hidden oils and excess sodium. Make masala fresh." }
+  ]},
+  { cat: "Sugars & Refined Carbs", items: [
+    { name: "White Sugar (already avoiding ✓)", icon: "🍬", reason: "Raises triglycerides. You're doing great with monk fruit/stevia." },
+    { name: "Jaggery (in excess)", icon: "🟤", reason: "Still sugar — raises triglycerides. Even natural sugars spike insulin in large amounts." },
+    { name: "Maida (refined flour)", icon: "🌾", reason: "White bread, naan, puri, bhature — refined carbs spike triglycerides (yours: 153)." },
+    { name: "White Rice (excess)", icon: "🍚", reason: "High glycemic. Switch to brown rice, quinoa, or millets. Limit to 3/4 cup if eating white rice." },
+    { name: "Fruit Juice", icon: "🧃", reason: "Even 100% juice has concentrated sugar without fiber. Eat whole fruit instead." },
+    { name: "Sweetened Yogurt", icon: "🍦", reason: "Added sugar spikes triglycerides. Use plain dahi/Greek yogurt + monk fruit." }
+  ]},
+  { cat: "Cooking Methods to Avoid", items: [
+    { name: "Deep Frying", icon: "🍳", reason: "Puri, pakora, bhajiya, vada — all deep fried foods absorb excess oil and create oxidized fats." },
+    { name: "Reusing Cooking Oil", icon: "♻️", reason: "Creates harmful aldehydes and trans fats. Always use fresh oil." },
+    { name: "Excess Tempering (Tadka)", icon: "🥄", reason: "Multiple tadkas add up. Use max 1 tsp oil per dish. Air fry spices when possible." },
+    { name: "Heavy Cream-Based Gravies", icon: "🫕", reason: "Restaurant-style makhani, korma, malai curries — loaded with cream & butter." }
+  ]},
+  { cat: "Beverages", items: [
+    { name: "Chai with Full-Fat Milk (excess)", icon: "☕", reason: "Multiple cups of milky chai adds saturated fat. Stick to black coffee or green tea." },
+    { name: "Soft Drinks / Soda", icon: "🥤", reason: "Sugar bombs that spike triglycerides. Even diet soda may affect metabolism." },
+    { name: "Alcohol", icon: "🍺", reason: "Directly raises triglycerides. With your levels at 153, even moderate drinking keeps them elevated." },
+    { name: "Energy Drinks", icon: "⚡", reason: "Excessive caffeine + sugar/artificial sweeteners. Bad for heart health." }
+  ]},
+  { cat: "Restaurant & Takeout Cautions", items: [
+    { name: "Indian Restaurant Curries", icon: "🍛", reason: "Restaurant dal makhani, paneer butter masala etc use 3-5x more butter/cream than homemade. Cook at home." },
+    { name: "Fast Food (any)", icon: "🍔", reason: "High in trans fats, sodium, refined carbs. Even veggie burgers have processed buns." },
+    { name: "Pizza", icon: "🍕", reason: "Refined flour base + cheese = saturated fat + high glycemic load." },
+    { name: "Chinese Takeout", icon: "🥡", reason: "MSG, excess sodium, deep-fried starters, sugary sauces. High triglyceride trigger." }
+  ]}
+];
+
+// SUPPLEMENTS DATA
+const SUPPLEMENTS_DATA = [
+  { icon: "☀️", name: "Vitamin D3 — Increase to 4000-5000 IU", dose: "Take with breakfast shake (fat helps absorption)", note: "Current 2000 IU isn't enough — your level is 19.1 (need 30+). Ask your doctor about higher dose." },
+  { icon: "🩸", name: "Iron — 65mg Ferrous Sulfate", dose: "Take on empty stomach with vitamin C (orange juice or lemon water)", note: "Avoid taking within 2 hours of coffee, tea, or calcium. Your HGB is 13.0 — keep supplementing." },
+  { icon: "🐟", name: "Omega-3 (Algae-Based)", dose: "1000mg DHA+EPA daily — take with food", note: "RECOMMENDED NEW ADDITION: Algae omega-3 (vegetarian) to raise HDL (38→60) and lower triglycerides." },
+  { icon: "🌿", name: "Psyllium Husk (Isabgol)", dose: "Start 1 tsp, increase to 1.5 tsp in warm water before bed or morning", note: "Proven to lower LDL by 5-10%. Already in your diet plan. Drink plenty of water with it." },
+  { icon: "💊", name: "Plant Sterols (Optional)", dose: "2g daily — available as supplements or in fortified foods", note: "OPTIONAL: Can lower LDL by 6-15%. Available at Costco or Kroger. Ask your doctor first." },
+  { icon: "🏋️", name: "Whey Protein", dose: "1 scoop (25-30g protein) daily in morning shake", note: "Continue as is — good for muscle building. Choose isolate over concentrate for less fat." },
+  { icon: "⚠️", name: "Discuss with Doctor", dose: "", note: "Show blood work to doctor. With LDL at 152, ask about: (1) Increasing D3 dose (2) Thalassemia screening (3) Whether statin/medication is needed alongside diet changes." }
+];
+
+
+// ============ APP LOGIC ============
+
+let currentWeek = 'week1';
+let currentDay = 'Mon';
+let currentGroceryWeek = 'week1';
+let currentStore = 'all';
+let checkedItems = {};
+
+// Try to load checked items
+try {
+  const saved = window.name; // Using window.name as simple storage
+  if (saved && saved.startsWith('{')) checkedItems = JSON.parse(saved);
+} catch(e) {}
+
+function saveChecked() {
+  try { window.name = JSON.stringify(checkedItems); } catch(e) {}
+}
+
+// Tab navigation
+document.querySelectorAll('.tab, .nav-item').forEach(el => {
+  el.addEventListener('click', () => {
+    const tab = el.dataset.tab;
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    document.querySelectorAll('.nav-item').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    document.querySelectorAll('.section').forEach(s => s.classList.toggle('active', s.id === tab));
+  });
+});
+
+// Render week selector
+function renderWeekSelector(containerId, activeWeek, callback) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  Object.keys(MEAL_DATA).forEach(wk => {
+    const btn = document.createElement('button');
+    btn.className = 'week-btn' + (wk === activeWeek ? ' active' : '');
+    btn.textContent = MEAL_DATA[wk].name;
+    btn.onclick = () => callback(wk);
+    container.appendChild(btn);
+  });
+}
+
+// Render day selector
+function renderDaySelector() {
+  const container = document.getElementById('daySelector');
+  container.innerHTML = '';
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  days.forEach(d => {
+    const btn = document.createElement('button');
+    btn.className = 'day-btn' + (d === currentDay ? ' active' : '');
+    btn.textContent = d.charAt(0);
+    btn.title = d;
+    btn.onclick = () => { currentDay = d; renderDaySelector(); renderMeals(); };
+    container.appendChild(btn);
+  });
+}
+
+// Render meals
+function renderMeals() {
+  const container = document.getElementById('mealContent');
+  const dayData = MEAL_DATA[currentWeek]?.days[currentDay];
+  if (!dayData) { container.innerHTML = '<p>No data</p>'; return; }
+
+  const mealOrder = ['earlyMorning','shake','coffee','lunch','snack','dinner'];
+  const mealLabels = { earlyMorning:'Early Morning', shake:'Morning Shake', coffee:'Pre-Work', lunch:'Lunch', snack:'Afternoon Snack', dinner:'Dinner' };
+  const mealIcons = { earlyMorning:'🌅', shake:'🥤', coffee:'☕', lunch:'🍽️', snack:'🥜', dinner:'🍛' };
+
+  container.innerHTML = mealOrder.map(key => {
+    const m = dayData[key];
+    if (!m) return '';
+    return `<div class="card">
+      <div class="meal-time">${mealIcons[key]} ${mealLabels[key]} · ${m.time}</div>
+      <div class="meal-item">
+        <div class="meal-name">${m.name}</div>
+        <div class="meal-desc">${m.desc}</div>
+        ${m.nutrients ? `<div class="meal-nutrients">${m.nutrients}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Render grocery
+function renderGrocery() {
+  const container = document.getElementById('groceryContent');
+  const data = GROCERY_DATA[currentGroceryWeek];
+  if (!data) { container.innerHTML = '<p>No data</p>'; return; }
+
+  const searchTerm = (document.getElementById('grocerySearch')?.value || '').toLowerCase();
+
+  container.innerHTML = data.categories.map((cat, ci) => {
+    const items = cat.items.filter(item => {
+      const storeMatch = currentStore === 'all' || item.store === currentStore;
+      const searchMatch = !searchTerm || item.name.toLowerCase().includes(searchTerm) || item.detail.toLowerCase().includes(searchTerm);
+      return storeMatch && searchMatch;
+    });
+    if (items.length === 0) return '';
+
+    const storeClass = { costco: 'store-costco', patel: 'store-patel', tj: 'store-tj', kroger: 'store-kroger' };
+    const storeLabel = { costco: 'Costco', patel: 'Patel Bros', tj: "Trader Joe's", kroger: 'Kroger' };
+
+    return `<div class="card">
+      <div class="card-title">${cat.name}</div>
+      ${items.map((item, ii) => {
+        const key = `${currentGroceryWeek}-${ci}-${ii}`;
+        const checked = checkedItems[key];
+        return `<div class="grocery-item">
+          <div class="grocery-check ${checked ? 'checked' : ''}" onclick="toggleCheck('${key}', this)"></div>
+          <div class="grocery-text">
+            <div class="grocery-name ${checked ? 'checked-text' : ''}">${item.name} <span style="color:var(--text-secondary);font-size:12px">(${item.qty})</span></div>
+            <div class="grocery-detail"><span class="store-tag ${storeClass[item.store]}">${storeLabel[item.store]}</span> ${item.detail}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  }).join('');
+}
+
+function toggleCheck(key, el) {
+  checkedItems[key] = !checkedItems[key];
+  saveChecked();
+  renderGrocery();
+}
+
+// Render avoid
+function renderAvoid() {
+  const container = document.getElementById('avoidContent');
+  const searchTerm = (document.getElementById('avoidSearch')?.value || '').toLowerCase();
+
+  container.innerHTML = AVOID_DATA.map(cat => {
+    const items = cat.items.filter(i => !searchTerm || i.name.toLowerCase().includes(searchTerm) || i.reason.toLowerCase().includes(searchTerm));
+    if (items.length === 0) return '';
+    return `<div class="card">
+      <div class="card-title" style="color:var(--danger)">${cat.cat}</div>
+      ${items.map(i => `<div class="avoid-item">
+        <div class="avoid-icon">${i.icon}</div>
+        <div>
+          <div class="avoid-name">${i.name}</div>
+          <div class="avoid-reason">${i.reason}</div>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+// Render supplements
+function renderSupps() {
+  const container = document.getElementById('suppsContent');
+  container.innerHTML = `<div class="card">
+    <div class="card-title">Daily Supplement Stack</div>
+    ${SUPPLEMENTS_DATA.map(s => `<div class="supplement-card">
+      <div class="supp-icon">${s.icon}</div>
+      <div>
+        <div class="supp-name">${s.name}</div>
+        ${s.dose ? `<div class="supp-dose">${s.dose}</div>` : ''}
+        ${s.note ? `<div class="supp-note">${s.note}</div>` : ''}
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// Store filter
+document.getElementById('storeFilter').addEventListener('click', e => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  currentStore = btn.dataset.store;
+  document.querySelectorAll('#storeFilter .filter-btn').forEach(b => b.classList.toggle('active', b.dataset.store === currentStore));
+  renderGrocery();
+});
+
+// Search
+document.getElementById('grocerySearch')?.addEventListener('input', renderGrocery);
+document.getElementById('avoidSearch')?.addEventListener('input', renderAvoid);
+
+// Init
+function init() {
+  renderWeekSelector('weekSelector', currentWeek, wk => {
+    currentWeek = wk;
+    renderWeekSelector('weekSelector', currentWeek, arguments.callee);
+    renderDaySelector();
+    renderMeals();
+  });
+  renderWeekSelector('groceryWeekSelector', currentGroceryWeek, wk => {
+    currentGroceryWeek = wk;
+    renderWeekSelector('groceryWeekSelector', currentGroceryWeek, arguments.callee);
+    renderGrocery();
+  });
+  renderDaySelector();
+  renderMeals();
+  renderGrocery();
+  renderAvoid();
+  renderSupps();
+}
+
+init();
+
+// Service Worker registration
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
